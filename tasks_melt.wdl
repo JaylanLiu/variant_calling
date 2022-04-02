@@ -27,17 +27,27 @@ task call_MELT_step1{
         String MEMORY = "10 GB"
         
     }
+
+    String bam = basename(inputBAM)
+    String bai = basename(bamIndex)
+
     command {
         # generate mei_list
         ls ${sep = ' ' me_refs} > mei_list.txt
 
+        # symbol link bam and bai file to execution directory, faild in glob procedure
+        # try to introduce by cp to ., glob would condain the bam to output which occupy too much storage
+        # cp to subdirectory instead
+        mkdir input && cp ${inputBAM} input && cp ${bamIndex} input
+        
+
         java -jar ${MELT} Preprocess \
         -h ${RefFasta} \
-        -bamfile ${inputBAM} 
+        -bamfile input/${bam} 
 
         java -jar ${MELT} IndivAnalysis \
         -c 10 \
-        -bamfile ${inputBAM} \
+        -bamfile input/${bam} \
         -t mei_list.txt \
         -w . \
         -h ${RefFasta}
