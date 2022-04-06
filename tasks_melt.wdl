@@ -35,10 +35,12 @@ task call_MELT_step1{
         # generate mei_list
         ls ${sep = ' ' me_refs} > mei_list.txt
 
-        # symbol link bam and bai file to execution directory, faild in glob procedure
+        # symbol link bam and bai file to execution directory, failed in glob procedure
         # try to introduce by cp to ., glob would condain the bam to output which occupy too much storage
         # cp to subdirectory instead
-        mkdir input && cp ${inputBAM} input && cp ${bamIndex} input
+        # ln -s to subdirectory also works, choose this for cp io reduction
+        # mkdir input && cp ${inputBAM} input && cp ${bamIndex} input
+        mkdir input && ln -s ${inputBAM} input && ln -s ${bamIndex} input
         
 
         java -jar ${MELT} Preprocess \
