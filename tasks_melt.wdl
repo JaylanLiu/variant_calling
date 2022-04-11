@@ -219,7 +219,7 @@ task call_MELT_step4{
         -genotypingdir step3 \
         -t mei_list.txt \
         -p step2 \
-        -w . \
+        -w . 
     }
     runtime {
         docker: docker 
