@@ -95,6 +95,7 @@ task call_MELT_step2{
         String MEMORY = "10 GB"
         
     }
+    # test for output the input array before locolization. It remains the path before localization
     #File step1_outfile_list=write_lines(step1_output)
     command {
         # generate mei_list
@@ -104,8 +105,22 @@ task call_MELT_step2{
         mkdir step1
         python <<CODE
         import shutil
-        file_lists_str = "${sep = ' ' step1_output}"
-        file_lists = file_lists_str.split()
+        import os
+
+        def get_files_from_path(path:str)->list:
+            files = []
+            
+            for subunit in os.listdir(path):
+                subpath = os.path.join(path,subunit)
+                if os.path.isfile(subpath):
+                    files.append(subpath)
+                elif os.path.isdir(subpath):
+                    files.extend(get_files_from_path(subpath))
+            
+            return files
+        # get file lists from the relative path
+        file_lists = get_files_from_path('../inputs')
+
         for file in file_lists:
             shutil.copy(file,'step1')
         CODE
