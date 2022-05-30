@@ -95,12 +95,20 @@ task call_MELT_step2{
         String MEMORY = "10 GB"
         
     }
+    #File step1_outfile_list=write_lines(step1_output)
     command {
         # generate mei_list
         ls ${sep = ' ' me_refs} > mei_list.txt
         
         # copy step1 scatter output to one directory
-        mkdir step1 && cp ${sep = ' ' step1_output} step1
+        mkdir step1
+        python <<CODE
+        import shutil
+        file_lists_str = "${sep = ' ' step1_output}"
+        file_lists = file_lists_str.split()
+        for file in file_lists:
+            shutil.copy(file,'step1')
+        CODE
  
         java -jar ${MELT} GroupAnalysis \
         -discoverydir step1 \
