@@ -102,12 +102,13 @@ task call_MELT_step2{
         ls ${sep = ' ' me_refs} > mei_list.txt
         
         # copy step1 scatter output to one directory
+        # python interpreter in the cromwell does not support class annotation, remove these annotations.
         mkdir step1
         python <<CODE
         import shutil
         import os
 
-        def get_files_from_path(path:str)->list:
+        def get_files_from_path(path):
             files = []
             
             for subunit in os.listdir(path):
