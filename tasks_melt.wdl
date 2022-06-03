@@ -2,7 +2,7 @@ version 1.0
 
 task call_MELT_step1{
     meta {
-        description: "Call t Mobile Elemen using MELT step1"
+        description: "Call Mobile Elemen using MELT step1"
     }
     input {
         String docker = "alexeyebi/bowtie2_samtools"
@@ -70,7 +70,7 @@ task call_MELT_step1{
 
 task call_MELT_step2{
     meta {
-        description: "Call t Mobile Elemen using MELT step2"
+        description: "Call Mobile Elemen using MELT step2"
     }
     input {
         String docker = "alexeyebi/bowtie2_samtools"
@@ -148,7 +148,7 @@ task call_MELT_step2{
 
 task call_MELT_step3{
     meta {
-        description: "Call t Mobile Elemen using MELT step3"
+        description: "Call Mobile Elemen using MELT step3"
     }
     input {
         String docker = "alexeyebi/bowtie2_samtools"
@@ -203,7 +203,7 @@ task call_MELT_step3{
 
 task call_MELT_step4{
     meta {
-        description: "Call t Mobile Elemen using MELT step4"
+        description: "Call Mobile Elemen using MELT step4"
     }
     input {
         String docker = "alexeyebi/bowtie2_samtools"
@@ -236,7 +236,28 @@ task call_MELT_step4{
         mkdir step2 && cp ${sep = ' ' step2_output} step2
 
         # copy step3 scatter output to one directory
-        mkdir step3 && cp ${sep = ' ' step3_output} step3
+        mkdir step3
+        python <<CODE
+        import shutil
+        import os
+
+        def get_files_from_path(path):
+            files = []
+            
+            for subunit in os.listdir(path):
+                subpath = os.path.join(path,subunit)
+                if os.path.isfile(subpath):
+                    files.append(subpath)
+                elif os.path.isdir(subpath):
+                    files.extend(get_files_from_path(subpath))
+            
+            return files
+        # get file lists from the relative path
+        file_lists = get_files_from_path('../inputs')
+
+        for file in file_lists:
+            shutil.copy(file,'step3')
+        CODE
  
         java -jar ${MELT} MakeVCF \
         -h ${RefFasta} \
